@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -83,17 +86,25 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'redgourmet_db',
-        'USER': 'redgourmet',
-        'PASSWORD': 'redgourmet',
-        'HOST': 'db',
-        'PORT': 5432,
+        'NAME': os.getenv('DATABASE_NAME', 'redgourmet_db'),
+        'USER': os.getenv('DATABASE_USER', 'redgourmet'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'redgourmet'),
+        'HOST': os.getenv('DATABASE_HOST', 'localhost'),  # localhost si no está en docker
+        'PORT': int(os.getenv('DATABASE_PORT', 5432)),
     }
 }
 
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
+
+AUTH_USER_MODEL = 'api.Provider'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
